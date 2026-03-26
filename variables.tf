@@ -3,28 +3,52 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
-variable "vpc_name" {
+variable "ami" {
   type    = string
-  default = "demo_vpc"
+  default = "ami-053b0d53c279acc90"
 }
 
-variable "vpc_cidr" {
-  type    = string
-  default = "10.0.0.0/16"
-}
-
-variable "private_subnets" {
-  default = {
-    "private_subnet_1" = 1
-    "private_subnet_2" = 2
-    "private_subnet_3" = 3
+variable "instance_type" {
+  description = "EC2 instance type for each environment"
+  type        = map(string)
+  default     = {
+    dev        = "t3.micro"
+    staging    = "t3.small"
+    production = "t3.medium"
   }
 }
 
-variable "public_subnets" {
+variable "instance_name" {
+  type    = string
+  default = "my-first-ec2"
+}
+
+variable "security_group_name" {
+  description = "Security group name per workspace"
+  type        = map(string)
   default = {
-    "public_subnet_1" = 1
-    "public_subnet_2" = 2
-    "public_subnet_3" = 3
+    dev     = "my-instance-sg-east1-dev"
+    staging = "my-instance-sg-east1-staging"
+    production = "my-instance-sg-east1-prod"
   }
 }
+
+variable "port_number" {
+  type    = number
+  default = 8080
+}
+
+variable "cidr_blocks" {
+  type    = list(string)
+  default = ["0.0.0.0/0"]
+}
+
+variable "user_data_script" {
+  type    = string
+  default = <<-EOF
+              #!/bin/bash
+              echo "Hello, World" > index.html
+              nohup busybox httpd -f -p 8080 &
+              EOF
+}
+
